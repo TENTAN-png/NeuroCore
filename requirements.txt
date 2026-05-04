@@ -6,3 +6,5 @@ networkx
 stmol
 py3Dmol
 rdkit
+scikit-learn
+joblib
