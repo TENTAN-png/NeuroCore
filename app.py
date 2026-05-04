@@ -46,6 +46,12 @@ if vectorizer and knn and search_query:
     X_query = vectorizer.transform([search_query])
     distances, indices = knn.kneighbors(X_query)
     match_index = indices[0][0]
+    
+    # Safety check if cached ML model is out of sync with CSV
+    if match_index >= len(df):
+        st.cache_resource.clear()  # Clear cache to reload models next time
+        match_index = 0
+        
     matched_row = df.iloc[match_index]
     
     selected_disease = {
