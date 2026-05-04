@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="https://3Dmol.csb.pitt.edu/build/3Dmol-min.js"></script>
+    <style>
+        body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background-color: #0f172a; }
+        #container { width: 100%; height: 100%; position: relative; }
+    </style>
+</head>
+<body>
+    <div id="container"></div>
+    <script>
+        let viewer = $3Dmol.createViewer("container", {
+            defaultcolors: $3Dmol.rasmolElementColors
+        });
+
+        // Listen for messages from React parent
+        window.addEventListener('message', function(event) {
+            if (event.data && event.data.type === 'LOAD_PDB') {
+                viewer.clear();
+                // We use a predefined PDB string or fetch from RCSB based on gene name
+                // For hackathon mockup, we will just fetch a generic protein structure 
+                // if we don't have the real PDB string passed.
+                let gene = event.data.gene;
+                
+                // Let's just fetch a generic PDB from RCSB for demo purposes if we don't have the local file
+                let pdbId = "1B38"; // generic
+                if (gene.includes("EGFR")) pdbId = "1NQL";
+                if (gene.includes("CFTR")) pdbId = "5UAK";
+                if (gene.includes("SOD1")) pdbId = "2C28";
+                
+                $3Dmol.download("pdb:" + pdbId, viewer, {doAssembly:true, noComputeSecondaryStructure:false}, function() {
+                    viewer.setStyle({}, {cartoon: {color: 'spectrum'}});
+                    viewer.zoomTo();
+                    viewer.render();
+                    viewer.zoom(1.2, 1000);
+                });
+            }
+        });
+        
+        // Initial render
+        $3Dmol.download("pdb:1B38", viewer, {}, function() {
+            viewer.setStyle({}, {cartoon: {color: 'spectrum'}});
+            viewer.zoomTo();
+            viewer.render();
+        });
+    </script>
+</body>
+</html>
