@@ -29,8 +29,10 @@ This platform integrates:
 4. **Bio-Production (KEGG)**: Retrosynthesis and organism recommendation for natural production.
 """)
 
+df = pd.read_csv('data/disease_dataset.csv')
+
 st.sidebar.subheader("AI Disease Matcher")
-search_query = st.sidebar.text_input("Enter Disease Name (e.g. ALS, Cancer, Diabetes):", "ALS")
+search_query = st.sidebar.selectbox("Search or Select a Disease:", df['name'].tolist(), index=0)
 
 @st.cache_resource
 def load_ml_models():
@@ -40,7 +42,7 @@ def load_ml_models():
 
 vectorizer, knn = load_ml_models()
 
-df = pd.read_csv('data/disease_dataset.csv')
+
 
 if vectorizer and knn and search_query:
     query_lower = search_query.lower()
