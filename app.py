@@ -1,6 +1,8 @@
 import streamlit as st
 import pandas as pd
 import json
+import joblib
+import os
 
 from stage1_genomics.genomics import render_stage1
 from stage2_protein.protein_api import render_stage2
@@ -27,13 +29,42 @@ This platform integrates:
 4. **Bio-Production (KEGG)**: Retrosynthesis and organism recommendation for natural production.
 """)
 
-disease_names = [d['name'] for d in diseases]
-selected_disease_name = st.sidebar.selectbox("Select Target Disease", disease_names)
-selected_disease = next(d for d in diseases if d['name'] == selected_disease_name)
+st.sidebar.subheader("AI Disease Matcher")
+search_query = st.sidebar.text_input("Enter Disease Name (e.g. ALS, Cancer, Diabetes):", "ALS")
 
-st.sidebar.markdown("---")
-st.sidebar.markdown(f"**Mutated Gene:** {selected_disease['mutated_gene']}")
-st.sidebar.markdown(f"**Affected Cell Type:** {selected_disease['cell_type']}")
+@st.cache_resource
+def load_ml_models():
+    if os.path.exists('models/vectorizer.pkl') and os.path.exists('models/knn_model.pkl'):
+        return joblib.load('models/vectorizer.pkl'), joblib.load('models/knn_model.pkl')
+    return None, None
+
+vectorizer, knn = load_ml_models()
+
+df = pd.read_csv('data/disease_dataset.csv')
+
+if vectorizer and knn and search_query:
+    X_query = vectorizer.transform([search_query])
+    distances, indices = knn.kneighbors(X_query)
+    match_index = indices[0][0]
+    matched_row = df.iloc[match_index]
+    
+    selected_disease = {
+        "name": matched_row["name"],
+        "mutated_gene": matched_row["mutated_gene"],
+        "cell_type": matched_row["cell_type"],
+        "sequence": matched_row["sequence"],
+        "up_regulated": eval(matched_row["up_regulated"]),
+        "down_regulated": eval(matched_row["down_regulated"]),
+        "drug_candidates": eval(str(matched_row["drug_candidates"])),
+        "biosynthesis": eval(str(matched_row["biosynthesis"]))
+    }
+    
+    st.sidebar.success(f"ML Match: **{selected_disease['name']}**")
+    st.sidebar.markdown("---")
+    st.sidebar.markdown(f"**Mutated Gene:** {selected_disease['mutated_gene']}")
+    st.sidebar.markdown(f"**Affected Cell Type:** {selected_disease['cell_type']}")
+else:
+    selected_disease = diseases[0]
 
 tabs = st.tabs(["Stage 1: Genomics", "Stage 2: 3D Protein", "Stage 3: GNN Screening", "Stage 4: BioProduction"])
 
