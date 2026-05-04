@@ -78,5 +78,43 @@ def render_stage4(disease_data):
                     xaxis=dict(showgrid=False, zeroline=False, showticklabels=False),
                     yaxis=dict(showgrid=False, zeroline=False, showticklabels=False))
                     )
+    import time
     
-    st.plotly_chart(fig, use_container_width=True)
+    chart_placeholder = st.empty()
+    
+    if st.button("▶ Simulate Bioproduction Reaction"):
+        for step in range(len(nodes)):
+            # Re-color nodes based on step
+            current_colors = []
+            sizes = []
+            for i, node in enumerate(G.nodes()):
+                if i < step:
+                     current_colors.append('#2ca02c') # completed
+                     sizes.append(40)
+                elif i == step:
+                     current_colors.append('#ff7f0e') # active (orange)
+                     sizes.append(60) # bigger
+                else:
+                     current_colors.append('#1f77b4') # pending
+                     sizes.append(40)
+            
+            node_trace.marker.color = current_colors
+            node_trace.marker.size = sizes
+            
+            fig = go.Figure(data=[edge_trace, node_trace],
+                         layout=go.Layout(
+                            title=f'Reaction Step {step+1}/{len(nodes)}: Synthesizing {nodes[step]}...',
+                            title_font_size=16,
+                            showlegend=False,
+                            hovermode='closest',
+                            margin=dict(b=20,l=5,r=5,t=40),
+                            xaxis=dict(showgrid=False, zeroline=False, showticklabels=False),
+                            yaxis=dict(showgrid=False, zeroline=False, showticklabels=False))
+                            )
+            chart_placeholder.plotly_chart(fig, use_container_width=True)
+            time.sleep(1.2) # Wait to create animation effect
+            
+        st.success("✅ Drug Synthesis Complete! The organism has successfully manufactured the drug.")
+    else:
+        # Default static view
+        chart_placeholder.plotly_chart(fig, use_container_width=True)
