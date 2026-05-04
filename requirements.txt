@@ -7,3 +7,6 @@ py3Dmol
 rdkit
 scikit-learn
 joblib
+fastapi
+uvicorn
+pydantic
