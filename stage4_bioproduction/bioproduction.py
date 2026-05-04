@@ -75,6 +75,10 @@ def render_stage4(disease_data):
                         showarrow=False,
                         xref="paper", yref="paper",
                         x=0.005, y=-0.002 ) ],
+                    xaxis=dict(showgrid=False, zeroline=False, showticklabels=False),
+                    yaxis=dict(showgrid=False, zeroline=False, showticklabels=False))
+                 )
+    
     import time
     from rdkit import Chem
     from rdkit.Chem import Draw
