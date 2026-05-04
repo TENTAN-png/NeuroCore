@@ -4,14 +4,14 @@ import time
 
 # Curated list of known Disease-Gene associations from DisGeNET / OpenTargets
 core_data = [
-    {"name": "Amyotrophic Lateral Sclerosis", "gene": "SOD1"},
-    {"name": "Cystic Fibrosis", "gene": "CFTR"},
-    {"name": "Glioblastoma", "gene": "EGFR"},
-    {"name": "Sickle Cell Anemia", "gene": "HBB"},
-    {"name": "Alzheimer's Disease", "gene": "APP"},
-    {"name": "Parkinson's Disease", "gene": "SNCA"},
-    {"name": "Melanoma", "gene": "BRAF"},
-    {"name": "Huntington's Disease", "gene": "HTT"}
+    {"name": "Amyotrophic Lateral Sclerosis", "gene": "SOD1", "smiles": "CC1=C(C=C(C=C1)NC(=O)C2=CC=C(C=C2)CN3CCN(CC3)C)NC4=NC=CC(=N4)C5=CN=CC=C5"},
+    {"name": "Cystic Fibrosis", "gene": "CFTR", "smiles": "CC(C)(C)C1=CC(=C(C=C1)O)C2=CN=C(N=C2)NC3=CC=CC=C3"},
+    {"name": "Glioblastoma", "gene": "EGFR", "smiles": "CN1CCN(CC1)CC2=CC=C(C=C2)NC(=O)C3=CC=C(C=C3)C4=CN=C(N=C4)NC5=CC=CC=C5"},
+    {"name": "Sickle Cell Anemia", "gene": "HBB", "smiles": "CC1=CC(=C(C=C1)O)C2=NN=C(O2)C3=CC=C(C=C3)F"},
+    {"name": "Alzheimer's Disease", "gene": "APP", "smiles": "CC1=C(N=C(S1)NC(=O)C2=CC=C(C=C2)Cl)C3=CC=CC=C3"},
+    {"name": "Parkinson's Disease", "gene": "SNCA", "smiles": "C1CCC(CC1)(CC(=O)O)CN"},
+    {"name": "Melanoma", "gene": "BRAF", "smiles": "CC1=C(C(=CC=C1)F)S(=O)(=O)NC2=C(C=C(C=C2)C(=O)NC3=CC=C(C=C3)Cl)F"},
+    {"name": "Huntington's Disease", "gene": "HTT", "smiles": "CC(C)CC1=CC=C(C=C1)C(C)C(=O)O"}
 ]
 
 def fetch_uniprot_sequence(gene_symbol):
@@ -34,6 +34,7 @@ def build_dataset():
     for item in core_data:
         disease = item["name"]
         gene_symbol = item["gene"]
+        smiles = item["smiles"]
         
         sequence = fetch_uniprot_sequence(gene_symbol)
         
@@ -51,7 +52,7 @@ def build_dataset():
             "up_regulated": [gene_symbol, "CASP3", "BAX", "GFAP"],
             "down_regulated": ["BDNF", "GDNF", "TP53"],
             "drug_candidates": [
-                {"smiles": "CC1=C(C=C(C=C1)NC(=O)C2=CC=C(C=C2)CN3CCN(CC3)C)NC4=NC=CC(=N4)C5=CN=CC=C5", "name": f"{gene_symbol}-Targeted Compound", "affinity": -9.8, "admet_score": 0.85}
+                {"smiles": smiles, "name": f"{gene_symbol}-Targeted Compound", "affinity": -9.8, "admet_score": 0.85}
             ],
             "biosynthesis": {
                 "organism": "Saccharomyces cerevisiae (Engineered)",
