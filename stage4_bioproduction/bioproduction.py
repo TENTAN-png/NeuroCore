@@ -133,7 +133,7 @@ def render_stage4(disease_data):
             mol = Chem.MolFromSmiles(current_smiles)
             if mol:
                 img = Draw.MolToImage(mol, size=(300, 300))
-                mol_placeholder.image(img, caption=f"Structural Formula: {node_name}", use_column_width=True)
+                mol_placeholder.image(img, caption=f"Structural Formula: {node_name}", use_container_width=True)
                 
             time.sleep(1.2) # Wait to create animation effect
             
@@ -145,4 +145,4 @@ def render_stage4(disease_data):
         mol = Chem.MolFromSmiles(final_smiles)
         if mol:
             img = Draw.MolToImage(mol, size=(300, 300))
-            mol_placeholder.image(img, caption=f"Final Drug Structure", use_column_width=True)
+            mol_placeholder.image(img, caption=f"Final Drug Structure", use_container_width=True)
