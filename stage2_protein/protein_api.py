@@ -28,7 +28,12 @@ def render_stage2(disease_data):
                     'Content-Type': 'text/plain',
                 }
                 try:
-                    response = requests.post('https://api.esmatlas.com/foldSequence/v1/pdb/', headers=headers, data=sequence)
+                    # ESMFold public API limits sequences to 400 AA
+                    safe_sequence = sequence[:400]
+                    if len(sequence) > 400:
+                        st.warning("⚠️ Sequence truncated to 400 amino acids to comply with ESMFold public API limits.")
+                        
+                    response = requests.post('https://api.esmatlas.com/foldSequence/v1/pdb/', headers=headers, data=safe_sequence)
                     if response.status_code == 200:
                         pdb_string = response.text
                         with open(pdb_path, 'w') as f:

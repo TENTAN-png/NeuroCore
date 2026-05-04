@@ -8,22 +8,42 @@ import diseasesData from './data/diseases.json';
 import './index.css';
 
 // 3D Molecule Component (Drug Candidate)
-const Molecule = () => {
+const Molecule = ({ step = 0 }) => {
   const group = useRef();
   useFrame((state) => {
     group.current.rotation.y = state.clock.elapsedTime * 0.2;
     group.current.rotation.x = Math.sin(state.clock.elapsedTime * 0.1) * 0.2;
   });
+  
+  // Calculate dynamic properties based on the reaction step
+  const scale = Math.min(1 + (step * 0.2), 1.8);
+  const coreColor = step === 0 ? "#10b981" : step === 1 ? "#8b5cf6" : step > 1 ? "#2563eb" : "#2563eb";
+
   return (
-    <group ref={group}>
+    <group ref={group} scale={scale}>
       <Float speed={2} rotationIntensity={0.5} floatIntensity={1}>
-        <Sphere position={[0, 0, 0]} args={[0.5, 32, 32]}><meshStandardMaterial color="#2563eb" metalness={0.8} roughness={0.2} /></Sphere>
-        <Cylinder position={[0.8, 0.8, 0]} args={[0.1, 0.1, 2]} rotation={[0, 0, -Math.PI / 4]}><meshStandardMaterial color="#94a3b8" metalness={0.5} /></Cylinder>
-        <Sphere position={[1.5, 1.5, 0]} args={[0.3, 32, 32]}><meshStandardMaterial color="#14b8a6" metalness={0.8} roughness={0.2} /></Sphere>
-        <Cylinder position={[-0.8, 0.8, 0]} args={[0.1, 0.1, 2]} rotation={[0, 0, Math.PI / 4]}><meshStandardMaterial color="#94a3b8" metalness={0.5} /></Cylinder>
-        <Sphere position={[-1.5, 1.5, 0]} args={[0.4, 32, 32]}><meshStandardMaterial color="#ef4444" metalness={0.8} roughness={0.2} /></Sphere>
-        <Cylinder position={[0, -1, 0.8]} args={[0.1, 0.1, 2]} rotation={[Math.PI / 4, 0, 0]}><meshStandardMaterial color="#94a3b8" metalness={0.5} /></Cylinder>
-        <Sphere position={[0, -1.8, 1.5]} args={[0.3, 32, 32]}><meshStandardMaterial color="#eab308" metalness={0.8} roughness={0.2} /></Sphere>
+        <Sphere position={[0, 0, 0]} args={[0.5, 32, 32]}><meshStandardMaterial color={coreColor} metalness={0.8} roughness={0.2} /></Sphere>
+        
+        {step >= 0 && (
+          <>
+            <Cylinder position={[0.8, 0.8, 0]} args={[0.1, 0.1, 2]} rotation={[0, 0, -Math.PI / 4]}><meshStandardMaterial color="#94a3b8" metalness={0.5} /></Cylinder>
+            <Sphere position={[1.5, 1.5, 0]} args={[0.3, 32, 32]}><meshStandardMaterial color="#14b8a6" metalness={0.8} roughness={0.2} /></Sphere>
+          </>
+        )}
+        
+        {step >= 1 && (
+          <>
+            <Cylinder position={[-0.8, 0.8, 0]} args={[0.1, 0.1, 2]} rotation={[0, 0, Math.PI / 4]}><meshStandardMaterial color="#94a3b8" metalness={0.5} /></Cylinder>
+            <Sphere position={[-1.5, 1.5, 0]} args={[0.4, 32, 32]}><meshStandardMaterial color="#ef4444" metalness={0.8} roughness={0.2} /></Sphere>
+          </>
+        )}
+        
+        {step >= 2 && (
+          <>
+            <Cylinder position={[0, -1, 0.8]} args={[0.1, 0.1, 2]} rotation={[Math.PI / 4, 0, 0]}><meshStandardMaterial color="#94a3b8" metalness={0.5} /></Cylinder>
+            <Sphere position={[0, -1.8, 1.5]} args={[0.3, 32, 32]}><meshStandardMaterial color="#eab308" metalness={0.8} roughness={0.2} /></Sphere>
+          </>
+        )}
       </Float>
     </group>
   );
@@ -424,7 +444,7 @@ function App() {
                       <Canvas camera={{ position: [0, 0, 5] }}>
                         <ambientLight />
                         <pointLight position={[10, 10, 10]} />
-                        <Molecule />
+                        <Molecule step={animStep} />
                         <OrbitControls autoRotate autoRotateSpeed={2 + (animStep * 2)} enableZoom={false} />
                       </Canvas>
                    </div>
