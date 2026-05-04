@@ -4,12 +4,24 @@ import json
 import joblib
 import os
 
+from style import load_css
 from stage1_genomics.genomics import render_stage1
 from stage2_protein.protein_api import render_stage2
 from stage3_drug.drug_screening import render_stage3
 from stage4_bioproduction.bioproduction import render_stage4
 
-st.set_page_config(page_title="BioGenesis AI", page_icon="🧬", layout="wide")
+st.set_page_config(page_title="BioGenesis Platform", page_icon="🧬", layout="wide")
+
+# Inject Custom CSS
+st.markdown(load_css(), unsafe_allow_html=True)
+
+# 1. Custom Top Bar Header
+st.markdown("""
+<div class="top-bar">
+    <h1>🧬 BioGenesis Platform</h1>
+    <div class="top-bar-status">SYSTEM ONLINE • v1.2.0</div>
+</div>
+""", unsafe_allow_html=True)
 
 # Load pre-cached disease data
 @st.cache_data
@@ -18,21 +30,11 @@ def load_data():
         return json.load(f)
 
 diseases = load_data()
-
-st.title("🧬 BioGenesis: End-to-End AI Drug Discovery")
-st.markdown("""
-Welcome to **BioGenesis**, a 4-stage AI pipeline connecting disease genomics directly to biological drug production.
-This platform integrates:
-1. **Genomics Profile**: Identification of mutated genes and cell types.
-2. **Protein Folding (ESMFold)**: 3D prediction of the target protein.
-3. **GNN Drug Screening**: Candidate generation and ADMET ranking.
-4. **Bio-Production (KEGG)**: Retrosynthesis and organism recommendation for natural production.
-""")
-
 df = pd.read_csv('data/disease_dataset.csv')
 
-st.sidebar.subheader("AI Disease Matcher")
-search_query = st.sidebar.selectbox("Search or Select a Disease:", df['name'].tolist(), index=0)
+# --- LEFT SIDEBAR (Clinical Styling) ---
+st.sidebar.markdown('<div class="sidebar-section-label">Target Selection</div>', unsafe_allow_html=True)
+search_query = st.sidebar.selectbox("Disease Target", df['name'].tolist(), index=0)
 
 @st.cache_resource
 def load_ml_models():
@@ -41,8 +43,6 @@ def load_ml_models():
     return None, None
 
 vectorizer, knn = load_ml_models()
-
-
 
 if vectorizer and knn and search_query:
     query_lower = search_query.lower()
@@ -55,9 +55,8 @@ if vectorizer and knn and search_query:
         distances, indices = knn.kneighbors(X_query)
         match_index = indices[0][0]
         
-        # Safety check if cached ML model is out of sync with CSV
         if match_index >= len(df):
-            st.cache_resource.clear()  # Clear cache to reload models next time
+            st.cache_resource.clear()
             match_index = 0
             
     matched_row = df.iloc[match_index]
@@ -73,23 +72,40 @@ if vectorizer and knn and search_query:
         "biosynthesis": eval(str(matched_row["biosynthesis"]))
     }
     
-    st.sidebar.success(f"ML Match: **{selected_disease['name']}**")
-    st.sidebar.markdown("---")
-    st.sidebar.markdown(f"**Mutated Gene:** {selected_disease['mutated_gene']}")
-    st.sidebar.markdown(f"**Affected Cell Type:** {selected_disease['cell_type']}")
+    st.sidebar.markdown('<div class="sidebar-section-label">Model Output</div>', unsafe_allow_html=True)
+    st.sidebar.markdown(f'<div style="font-size: 14px; color: #f8fafc; font-weight: 500; margin-bottom: 16px;">Target Matched:<br/><span style="color: #60a5fa; font-size: 16px;">{selected_disease["name"]}</span></div>', unsafe_allow_html=True)
+    
+    st.sidebar.markdown('<div class="sidebar-section-label">Key Metadata</div>', unsafe_allow_html=True)
+    st.sidebar.markdown(f'<div class="metadata-badge accent">Target Gene: {selected_disease["mutated_gene"]}</div>', unsafe_allow_html=True)
+    st.sidebar.markdown(f'<div class="metadata-badge">Tissue/Cell: {selected_disease["cell_type"]}</div>', unsafe_allow_html=True)
 else:
     selected_disease = diseases[0]
 
-tabs = st.tabs(["Stage 1: Genomics", "Stage 2: 3D Protein", "Stage 3: GNN Screening", "Stage 4: BioProduction"])
+# --- MAIN CONTENT AREA ---
+# The CSS injected above overrides standard tabs to look like a horizontal step indicator.
+tabs = st.tabs([
+    "Step 1: Genomics Profiling", 
+    "Step 2: 3D Protein Structural Analysis", 
+    "Step 3: GNN Drug Generation", 
+    "Step 4: Bioproduction Pathway"
+])
 
 with tabs[0]:
+    st.markdown('<div class="card">', unsafe_allow_html=True)
     render_stage1(selected_disease)
+    st.markdown('</div>', unsafe_allow_html=True)
     
 with tabs[1]:
+    st.markdown('<div class="card">', unsafe_allow_html=True)
     render_stage2(selected_disease)
+    st.markdown('</div>', unsafe_allow_html=True)
     
 with tabs[2]:
+    st.markdown('<div class="card">', unsafe_allow_html=True)
     render_stage3(selected_disease)
+    st.markdown('</div>', unsafe_allow_html=True)
     
 with tabs[3]:
+    st.markdown('<div class="card">', unsafe_allow_html=True)
     render_stage4(selected_disease)
+    st.markdown('</div>', unsafe_allow_html=True)
