@@ -319,39 +319,36 @@ function App() {
                <h2 className="text-2xl font-semibold text-white">Stage 3: GNN Drug Generation</h2>
                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 
-                <div className="bg-slate-900/60 border border-slate-800 rounded-2xl p-6 backdrop-blur-md">
-                  <h3 className="text-slate-400 text-xs font-bold uppercase tracking-widest mb-6">Top Candidate Profile</h3>
+                <div className="bg-slate-900/60 border border-slate-800 rounded-2xl p-6 backdrop-blur-md flex flex-col h-[600px]">
+                  <h3 className="text-slate-400 text-xs font-bold uppercase tracking-widest mb-4 shrink-0">Top Candidate Profiles</h3>
                   
-                  <div className="space-y-6">
-                    <div>
-                      <div className="text-xs text-slate-500 mb-1 uppercase tracking-wider">Compound ID</div>
-                      <div className="font-mono text-sm text-blue-400 bg-slate-950 p-3 rounded-lg border border-slate-800">
-                        {selectedDisease.drug_candidates[0]?.name || "Unknown"}
-                      </div>
-                    </div>
-                    
-                    <div>
-                      <div className="text-xs text-slate-500 mb-1 uppercase tracking-wider">Binding Affinity</div>
-                      <div className="flex items-center gap-2">
-                        <div className="text-3xl font-light text-white">{selectedDisease.drug_candidates[0]?.affinity || "-9.0"}</div>
-                        <div className="text-sm text-teal-400">kcal/mol</div>
-                      </div>
-                    </div>
+                  <div className="space-y-4 overflow-y-auto pr-2 flex-1 scrollbar-thin scrollbar-thumb-slate-700 scrollbar-track-transparent">
+                    {selectedDisease.drug_candidates?.map((cand, idx) => (
+                      <div key={idx} className={`p-4 border rounded-xl transition-colors ${idx === 0 ? 'bg-blue-900/20 border-blue-500/50' : 'bg-slate-950/50 border-slate-800 hover:border-slate-600'}`}>
+                        <div className="text-sm font-bold mb-3 flex items-center justify-between">
+                          <span className={idx === 0 ? 'text-blue-400' : 'text-slate-300'}>{cand.name}</span>
+                          {idx === 0 && <span className="text-[10px] bg-blue-600 text-white px-2 py-0.5 rounded-full">LEAD</span>}
+                        </div>
+                        
+                        <div className="flex justify-between items-center mb-2">
+                          <div className="text-xs text-slate-500 uppercase tracking-wider">Binding Affinity</div>
+                          <div className="text-sm font-light text-white">{cand.affinity} kcal/mol</div>
+                        </div>
 
-                    <div>
-                      <div className="text-xs text-slate-500 mb-2 uppercase tracking-wider flex justify-between">
-                        <span>ADMET Score</span>
-                        <span className="text-white">{(selectedDisease.drug_candidates[0]?.admet_score * 100).toFixed(0)}%</span>
+                        <div className="flex justify-between items-center mb-1">
+                          <div className="text-xs text-slate-500 uppercase tracking-wider">ADMET Score</div>
+                          <span className="text-white text-sm">{(cand.admet_score * 100).toFixed(0)}%</span>
+                        </div>
+                        <div className="w-full bg-slate-800 rounded-full h-1.5">
+                          <div className={`h-1.5 rounded-full ${idx === 0 ? 'bg-gradient-to-r from-blue-500 to-teal-400' : 'bg-slate-500'}`} style={{ width: `${(cand.admet_score || 0.8) * 100}%` }}></div>
+                        </div>
                       </div>
-                      <div className="w-full bg-slate-800 rounded-full h-2">
-                        <div className="bg-gradient-to-r from-blue-500 to-teal-400 h-2 rounded-full" style={{ width: `${(selectedDisease.drug_candidates[0]?.admet_score || 0.8) * 100}%` }}></div>
-                      </div>
-                    </div>
+                    ))}
                   </div>
 
                   <button 
                     onClick={() => setActiveTab("Bioproduction")}
-                    className="w-full mt-10 bg-blue-600 hover:bg-blue-500 text-white py-3 rounded-xl font-medium transition-colors flex items-center justify-center gap-2"
+                    className="w-full mt-6 bg-blue-600 hover:bg-blue-500 text-white py-3 rounded-xl font-medium transition-colors flex items-center justify-center gap-2 shrink-0"
                   >
                     Generate Biosynthesis Pathway <ChevronRight size={18} />
                   </button>

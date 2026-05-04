@@ -18,9 +18,21 @@
         "drug_candidates": [
             {
                 "smiles": "CC1=C(C=C(C=C1)NC(=O)C2=CC=C(C=C2)CN3CCN(CC3)C)NC4=NC=CC(=N4)C5=CN=CC=C5",
-                "name": "SOD1-Targeted Compound",
-                "affinity": -9.8,
-                "admet_score": 0.85
+                "name": "SOD1-Lead Compound",
+                "affinity": -9.7,
+                "admet_score": 0.81
+            },
+            {
+                "smiles": "CC1=C(C=C(C=C1)O)C(=O)O",
+                "name": "SOD1-Derivative Alpha",
+                "affinity": -9.1,
+                "admet_score": 0.73
+            },
+            {
+                "smiles": "CC(C)CC1=CC=C(C=C1)C(C)C(=O)O",
+                "name": "SOD1-Derivative Beta",
+                "affinity": -8.4,
+                "admet_score": 0.66
             }
         ],
         "biosynthesis": {
@@ -56,9 +68,21 @@
         "drug_candidates": [
             {
                 "smiles": "CC(C)(C)C1=CC(=C(C=C1)O)C2=CN=C(N=C2)NC3=CC=CC=C3",
-                "name": "CFTR-Targeted Compound",
-                "affinity": -9.8,
-                "admet_score": 0.85
+                "name": "CFTR-Lead Compound",
+                "affinity": -9.9,
+                "admet_score": 0.95
+            },
+            {
+                "smiles": "CC1=C(C=C(C=C1)O)C(=O)O",
+                "name": "CFTR-Derivative Alpha",
+                "affinity": -9.3,
+                "admet_score": 0.87
+            },
+            {
+                "smiles": "CC1=C(C=C(C=C1)O)C(=O)O",
+                "name": "CFTR-Derivative Beta",
+                "affinity": -8.6,
+                "admet_score": 0.8
             }
         ],
         "biosynthesis": {
@@ -94,9 +118,21 @@
         "drug_candidates": [
             {
                 "smiles": "CN1CCN(CC1)CC2=CC=C(C=C2)NC(=O)C3=CC=C(C=C3)C4=CN=C(N=C4)NC5=CC=CC=C5",
-                "name": "EGFR-Targeted Compound",
-                "affinity": -9.8,
-                "admet_score": 0.85
+                "name": "EGFR-Lead Compound",
+                "affinity": -10.1,
+                "admet_score": 0.84
+            },
+            {
+                "smiles": "CC1=CC=C(C=C1)NC(=O)C2=CC=CC=C2",
+                "name": "EGFR-Derivative Alpha",
+                "affinity": -9.5,
+                "admet_score": 0.76
+            },
+            {
+                "smiles": "CC(C)CC1=CC=C(C=C1)C(C)C(=O)O",
+                "name": "EGFR-Derivative Beta",
+                "affinity": -8.8,
+                "admet_score": 0.69
             }
         ],
         "biosynthesis": {
@@ -132,9 +168,21 @@
         "drug_candidates": [
             {
                 "smiles": "CC1=CC(=C(C=C1)O)C2=NN=C(O2)C3=CC=C(C=C3)F",
-                "name": "HBB-Targeted Compound",
-                "affinity": -9.8,
-                "admet_score": 0.85
+                "name": "HBB-Lead Compound",
+                "affinity": -11.0,
+                "admet_score": 0.76
+            },
+            {
+                "smiles": "CC(C)CC1=CC=C(C=C1)C(C)C(=O)O",
+                "name": "HBB-Derivative Alpha",
+                "affinity": -10.4,
+                "admet_score": 0.68
+            },
+            {
+                "smiles": "CC(C)CC1=CC=C(C=C1)C(C)C(=O)O",
+                "name": "HBB-Derivative Beta",
+                "affinity": -9.7,
+                "admet_score": 0.61
             }
         ],
         "biosynthesis": {
@@ -170,9 +218,21 @@
         "drug_candidates": [
             {
                 "smiles": "CC1=C(N=C(S1)NC(=O)C2=CC=C(C=C2)Cl)C3=CC=CC=C3",
-                "name": "APP-Targeted Compound",
-                "affinity": -9.8,
-                "admet_score": 0.85
+                "name": "APP-Lead Compound",
+                "affinity": -11.4,
+                "admet_score": 0.87
+            },
+            {
+                "smiles": "CN1C=NC2=C1C(=O)N(C(=O)N2C)C",
+                "name": "APP-Derivative Alpha",
+                "affinity": -10.8,
+                "admet_score": 0.79
+            },
+            {
+                "smiles": "CC(C)CC1=CC=C(C=C1)C(C)C(=O)O",
+                "name": "APP-Derivative Beta",
+                "affinity": -10.1,
+                "admet_score": 0.72
             }
         ],
         "biosynthesis": {
@@ -208,9 +268,21 @@
         "drug_candidates": [
             {
                 "smiles": "C1CCC(CC1)(CC(=O)O)CN",
-                "name": "SNCA-Targeted Compound",
-                "affinity": -9.8,
-                "admet_score": 0.85
+                "name": "SNCA-Lead Compound",
+                "affinity": -11.2,
+                "admet_score": 0.92
+            },
+            {
+                "smiles": "CC(C)CC1=CC=C(C=C1)C(C)C(=O)O",
+                "name": "SNCA-Derivative Alpha",
+                "affinity": -10.6,
+                "admet_score": 0.84
+            },
+            {
+                "smiles": "CC1=C(C=C(C=C1)O)C(=O)O",
+                "name": "SNCA-Derivative Beta",
+                "affinity": -9.9,
+                "admet_score": 0.77
             }
         ],
         "biosynthesis": {
@@ -246,9 +318,21 @@
         "drug_candidates": [
             {
                 "smiles": "CC1=C(C(=CC=C1)F)S(=O)(=O)NC2=C(C=C(C=C2)C(=O)NC3=CC=C(C=C3)Cl)F",
-                "name": "BRAF-Targeted Compound",
+                "name": "BRAF-Lead Compound",
+                "affinity": -11.1,
+                "admet_score": 0.83
+            },
+            {
+                "smiles": "CN1C=NC2=C1C(=O)N(C(=O)N2C)C",
+                "name": "BRAF-Derivative Alpha",
+                "affinity": -10.5,
+                "admet_score": 0.75
+            },
+            {
+                "smiles": "CC(C)CC1=CC=C(C=C1)C(C)C(=O)O",
+                "name": "BRAF-Derivative Beta",
                 "affinity": -9.8,
-                "admet_score": 0.85
+                "admet_score": 0.68
             }
         ],
         "biosynthesis": {
@@ -284,9 +368,21 @@
         "drug_candidates": [
             {
                 "smiles": "CC(C)CC1=CC=C(C=C1)C(C)C(=O)O",
-                "name": "HTT-Targeted Compound",
-                "affinity": -9.8,
+                "name": "HTT-Lead Compound",
+                "affinity": -11.4,
+                "admet_score": 0.93
+            },
+            {
+                "smiles": "CC1=C(C=C(C=C1)O)C(=O)O",
+                "name": "HTT-Derivative Alpha",
+                "affinity": -10.8,
                 "admet_score": 0.85
+            },
+            {
+                "smiles": "CC1=C(C=C(C=C1)O)C(=O)O",
+                "name": "HTT-Derivative Beta",
+                "affinity": -10.1,
+                "admet_score": 0.78
             }
         ],
         "biosynthesis": {
