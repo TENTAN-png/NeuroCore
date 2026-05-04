@@ -1,7 +1,7 @@
 import streamlit as st
 import requests
 import py3Dmol
-from stmol import showmol
+import streamlit.components.v1 as components
 import time
 import os
 
@@ -52,4 +52,7 @@ def render_stage2(disease_data):
             view.setStyle({'cartoon': {'color': 'spectrum'}})
             view.setBackgroundColor('#111111')
             view.zoomTo()
-            showmol(view, height=500, width=800)
+            
+            # Native Streamlit rendering instead of buggy stmol
+            html = view._make_html()
+            components.html(html, height=500, width=800)

@@ -3,7 +3,6 @@ pandas
 requests
 plotly
 networkx
-stmol
 py3Dmol
 rdkit
 scikit-learn
