@@ -75,12 +75,22 @@ def render_stage4(disease_data):
                         showarrow=False,
                         xref="paper", yref="paper",
                         x=0.005, y=-0.002 ) ],
-                    xaxis=dict(showgrid=False, zeroline=False, showticklabels=False),
-                    yaxis=dict(showgrid=False, zeroline=False, showticklabels=False))
-                    )
     import time
+    from rdkit import Chem
+    from rdkit.Chem import Draw
     
-    chart_placeholder = st.empty()
+    col1, col2 = st.columns([2, 1])
+    with col1:
+        chart_placeholder = st.empty()
+    with col2:
+        mol_placeholder = st.empty()
+        
+    final_smiles = disease_data['drug_candidates'][0]['smiles'] if disease_data.get('drug_candidates') else "CC1=C(C=C(C=C1)NC(=O)C2=CC=C(C=C2)CN3CCN(CC3)C)NC4=NC=CC(=N4)C5=CN=CC=C5"
+    smiles_map = {
+        "Glucose": "OC[C@H]1OC(O)[C@H](O)[C@@H](O)[C@@H]1O",
+        "Precursor-1": "N[C@@H](Cc1ccc(O)cc1)C(=O)O", # L-Tyrosine
+        "Intermediate-X": "N[C@@H](Cc1ccc(O)c(O)c1)C(=O)O" # L-DOPA
+    }
     
     if st.button("▶ Simulate Bioproduction Reaction"):
         for step in range(len(nodes)):
@@ -112,9 +122,23 @@ def render_stage4(disease_data):
                             yaxis=dict(showgrid=False, zeroline=False, showticklabels=False))
                             )
             chart_placeholder.plotly_chart(fig, use_container_width=True)
+            
+            # Render RDKit Molecule for current step
+            node_name = nodes[step]
+            current_smiles = smiles_map.get(node_name, final_smiles)
+            mol = Chem.MolFromSmiles(current_smiles)
+            if mol:
+                img = Draw.MolToImage(mol, size=(300, 300))
+                mol_placeholder.image(img, caption=f"Structural Formula: {node_name}", use_column_width=True)
+                
             time.sleep(1.2) # Wait to create animation effect
             
         st.success("✅ Drug Synthesis Complete! The organism has successfully manufactured the drug.")
     else:
         # Default static view
         chart_placeholder.plotly_chart(fig, use_container_width=True)
+        # Show final drug by default
+        mol = Chem.MolFromSmiles(final_smiles)
+        if mol:
+            img = Draw.MolToImage(mol, size=(300, 300))
+            mol_placeholder.image(img, caption=f"Final Drug Structure", use_column_width=True)
