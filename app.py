@@ -25,7 +25,7 @@ st.markdown("""
 
 # Load pre-cached disease data
 @st.cache_data
-def load_data():
+def load_data(cache_buster=1):
     with open('data/diseases.json', 'r') as f:
         return json.load(f)
 
@@ -37,7 +37,7 @@ st.sidebar.markdown('<div class="sidebar-section-label">Target Selection</div>',
 search_query = st.sidebar.selectbox("Disease Target", df['name'].tolist(), index=0)
 
 @st.cache_resource
-def load_ml_models():
+def load_ml_models(cache_buster=1):
     if os.path.exists('models/vectorizer.pkl') and os.path.exists('models/knn_model.pkl'):
         return joblib.load('models/vectorizer.pkl'), joblib.load('models/knn_model.pkl')
     return None, None
