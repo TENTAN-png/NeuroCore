@@ -185,7 +185,7 @@ function App() {
             <Dna size={28} /> BioGenesis
           </div>
           <div className="mt-2 text-[10px] font-bold text-teal-400 bg-teal-400/10 border border-teal-400/20 inline-block px-2 py-1 rounded">
-            FASTAPI LIVE • ONLINE
+            CHEMBL + UNIPROT • LIVE
           </div>
         </div>
         
@@ -322,45 +322,32 @@ function App() {
                
                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <div className="bg-slate-900/60 border border-slate-800 rounded-2xl p-6 backdrop-blur-md flex flex-col h-[600px]">
-                  <h3 className="text-slate-400 text-xs font-bold uppercase tracking-widest mb-4 shrink-0">Live Computed Candidates</h3>
+                  <h3 className="text-slate-400 text-xs font-bold uppercase tracking-widest mb-2 shrink-0">ChEMBL Compound Library</h3>
+                  <div className="text-[10px] text-teal-500 mb-4 shrink-0">Source: ebi.ac.uk/chembl • Real IC50 Data</div>
                   
-                  <div className="space-y-4 overflow-y-auto pr-2 flex-1 scrollbar-thin scrollbar-thumb-slate-700 scrollbar-track-transparent">
+                  <div className="space-y-3 overflow-y-auto pr-2 flex-1 scrollbar-thin scrollbar-thumb-slate-700 scrollbar-track-transparent">
                     {selectedDisease.drug_candidates?.map((cand, idx) => (
-                      <div key={idx} className={`p-4 border rounded-xl transition-colors ${idx === 0 ? 'bg-blue-900/20 border-blue-500/50' : 'bg-slate-950/50 border-slate-800 hover:border-slate-600'}`}>
-                        <div className="text-sm font-bold mb-3 flex items-center justify-between">
+                      <div key={idx} className={`p-3 border rounded-xl transition-colors ${idx === 0 ? 'bg-blue-900/20 border-blue-500/50' : 'bg-slate-950/50 border-slate-800 hover:border-slate-600'}`}>
+                        <div className="text-sm font-bold mb-2 flex items-center justify-between">
                           <span className={idx === 0 ? 'text-blue-400' : 'text-slate-300'}>{cand.name}</span>
                           {idx === 0 && <span className="text-[10px] bg-blue-600 text-white px-2 py-0.5 rounded-full">LEAD</span>}
                         </div>
                         
-                        <div className="grid grid-cols-2 gap-2 mb-3">
+                        {cand.chembl_id && (
+                          <div className="text-[10px] text-slate-500 mb-2 font-mono">{cand.chembl_id} • {cand.source || 'ChEMBL'}</div>
+                        )}
+                        
+                        <div className="grid grid-cols-2 gap-1.5 mb-1">
+                          {cand.ic50_nM && (
+                            <div className="bg-slate-900 p-2 rounded border border-slate-800">
+                              <div className="text-[10px] text-slate-500 uppercase">IC50 (Measured)</div>
+                              <div className="text-xs font-bold text-white">{cand.ic50_nM.toLocaleString()} <span className="text-slate-500 font-normal">nM</span></div>
+                            </div>
+                          )}
                           <div className="bg-slate-900 p-2 rounded border border-slate-800">
                             <div className="text-[10px] text-slate-500 uppercase">Affinity</div>
                             <div className="text-xs font-bold text-white">{cand.affinity} <span className="text-slate-500 font-normal">kcal</span></div>
                           </div>
-                          {cand.mw && (
-                            <div className="bg-slate-900 p-2 rounded border border-slate-800">
-                              <div className="text-[10px] text-slate-500 uppercase">Mol Weight</div>
-                              <div className="text-xs font-bold text-white">{cand.mw} <span className="text-slate-500 font-normal">g/mol</span></div>
-                            </div>
-                          )}
-                          {cand.logp && (
-                            <div className="bg-slate-900 p-2 rounded border border-slate-800">
-                              <div className="text-[10px] text-slate-500 uppercase">LogP (Lipophilicity)</div>
-                              <div className="text-xs font-bold text-white">{cand.logp}</div>
-                            </div>
-                          )}
-                          {cand.qed_score && (
-                            <div className="bg-slate-900 p-2 rounded border border-slate-800">
-                              <div className="text-[10px] text-slate-500 uppercase">QED Score</div>
-                              <div className="text-xs font-bold text-teal-400">{cand.qed_score}</div>
-                            </div>
-                          )}
-                          {cand.admet_score && (
-                            <div className="bg-slate-900 p-2 rounded border border-slate-800 col-span-2">
-                              <div className="text-[10px] text-slate-500 uppercase">Legacy ADMET</div>
-                              <div className="text-xs font-bold text-white">{cand.admet_score}</div>
-                            </div>
-                          )}
                         </div>
                       </div>
                     ))}
@@ -368,7 +355,7 @@ function App() {
 
                   <button 
                     onClick={() => setActiveTab("Bioproduction")}
-                    className="w-full mt-6 bg-blue-600 hover:bg-blue-500 text-white py-3 rounded-xl font-medium transition-colors flex items-center justify-center gap-2 shrink-0"
+                    className="w-full mt-4 bg-blue-600 hover:bg-blue-500 text-white py-3 rounded-xl font-medium transition-colors flex items-center justify-center gap-2 shrink-0"
                   >
                     Generate Biosynthesis Pathway <ChevronRight size={18} />
                   </button>

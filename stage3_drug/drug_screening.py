@@ -4,82 +4,83 @@ from rdkit import Chem
 from rdkit.Chem import Draw, Descriptors, QED
 import base64
 from io import BytesIO
-import random
 
 def render_stage3(disease_data):
-    st.header("Stage 3: Generative AI Drug Design")
-    st.write(f"Generating optimized candidates for **{disease_data['mutated_gene']}** binding pocket...")
+    st.header("Stage 3: AI Drug Screening & ADMET Filter")
+    st.write(f"Screening ChEMBL compound library against **{disease_data['mutated_gene']}** binding pocket...")
     
-    st.info("🧬 **Live Chemistry Engine Active:** Computing exact molecular properties dynamically using RDKit algorithms.")
+    st.info("🧬 **All compounds sourced from ChEMBL (EBI)** — Real measured IC50 binding affinities. Molecular properties computed live via RDKit.")
     
-    # Extract base SMILES or fallback
-    base_smiles = disease_data['drug_candidates'][0]['smiles'] if disease_data.get('drug_candidates') else "CC1=CC=C(C=C1)NC(=O)C2=CC=CC=C2"
-    gene_symbol = disease_data['mutated_gene']
+    candidates = disease_data.get('drug_candidates', [])
     
-    # Dynamically generate and compute candidates
-    live_candidates = []
+    if not candidates:
+        st.warning("No drug candidates found for this target.")
+        return
     
-    # 1. Lead Compound
-    mol = Chem.MolFromSmiles(base_smiles)
-    if mol:
-        live_candidates.append({
-            "name": f"{gene_symbol}-Lead Compound",
-            "smiles": base_smiles,
-            "mw": round(Descriptors.MolWt(mol), 2),
-            "logp": round(Descriptors.MolLogP(mol), 2),
-            "qed": round(QED.qed(mol), 3),
-            "affinity": round(random.uniform(-11.5, -9.0), 1)
-        })
+    st.subheader(f"Top {len(candidates)} Candidates from ChEMBL")
+    
+    for idx, cand in enumerate(candidates):
+        smiles = cand.get('smiles', '')
+        mol = Chem.MolFromSmiles(smiles) if smiles else None
         
-    # 2. Dynamic Structural Mutations
-    mutations = [
-        ("C", "Derivative Alpha (Methylated)"),
-        ("F", "Derivative Beta (Fluorinated)"),
-        ("Cl", "Derivative Gamma (Chlorinated)")
-    ]
-    
-    for element, name in mutations:
-        try:
-            mut_smiles = base_smiles + element
-            mut_mol = Chem.MolFromSmiles(mut_smiles)
-            if mut_mol:
-                live_candidates.append({
-                    "name": f"{gene_symbol}-{name}",
-                    "smiles": mut_smiles,
-                    "mw": round(Descriptors.MolWt(mut_mol), 2),
-                    "logp": round(Descriptors.MolLogP(mut_mol), 2),
-                    "qed": round(QED.qed(mut_mol), 3),
-                    "affinity": round(random.uniform(-12.0, -8.0), 1)
-                })
-        except:
-            pass
-    
-    st.subheader("Live Computed Candidates")
-    
-    for idx, cand in enumerate(live_candidates):
         with st.container():
-            st.markdown(f"### {idx+1}. {cand['name']}")
+            # Header row with compound name + source badge
+            header_col1, header_col2 = st.columns([3, 1])
+            with header_col1:
+                st.markdown(f"### {idx+1}. {cand.get('name', 'Unknown')}")
+            with header_col2:
+                source = cand.get('source', 'ChEMBL')
+                chembl_id = cand.get('chembl_id', '')
+                if chembl_id and chembl_id != 'N/A':
+                    st.markdown(f"[View on ChEMBL](https://www.ebi.ac.uk/chembl/compound_report_card/{chembl_id}/)")
             
-            col1, col2, colimg = st.columns([1, 1, 2])
+            # Metrics row
+            col1, col2, col3, col4 = st.columns(4)
             
             with col1:
-                st.metric("Binding Affinity", f"{cand['affinity']} kcal/mol", delta="High")
-                st.metric("Mol Weight", f"{cand['mw']} g/mol", delta_color="off")
-            with col2:
-                st.metric("LogP (Lipophilicity)", f"{cand['logp']}", delta_color="off")
-                st.metric("QED Score", f"{cand['qed']}", delta="Safe")
-                
-            with colimg:
-                # Generate exact molecule image
-                mol_obj = Chem.MolFromSmiles(cand['smiles'])
-                if mol_obj:
-                    img = Draw.MolToImage(mol_obj, size=(300, 200))
-                    buffered = BytesIO()
-                    img.save(buffered, format="PNG")
-                    img_str = base64.b64encode(buffered.getvalue()).decode()
-                    st.markdown(f'<img src="data:image/png;base64,{img_str}" width="100%">', unsafe_allow_html=True)
+                ic50 = cand.get('ic50_nM')
+                if ic50:
+                    # Color-code IC50: lower = better
+                    delta_label = "Potent" if ic50 < 1000 else "Moderate" if ic50 < 10000 else "Weak"
+                    st.metric("IC50 (Measured)", f"{ic50:.0f} nM", delta=delta_label)
                 else:
-                    st.write("Invalid SMILES string")
+                    affinity = cand.get('affinity', 'N/A')
+                    st.metric("Binding Affinity", f"{affinity} kcal/mol", delta="Computed")
             
-            st.text(f"SMILES: {cand['smiles']}")
+            with col2:
+                # Compute molecular properties live via RDKit
+                if mol:
+                    mw = round(Descriptors.MolWt(mol), 1)
+                    lipinski = "Pass" if mw < 500 else "Fail"
+                    st.metric("Mol Weight", f"{mw} Da", delta=lipinski)
+                else:
+                    st.metric("Mol Weight", "N/A")
+            
+            with col3:
+                if mol:
+                    logp = round(Descriptors.MolLogP(mol), 2)
+                    lipinski_logp = "Pass" if logp <= 5 else "Fail"
+                    st.metric("LogP (Lipophilicity)", f"{logp}", delta=lipinski_logp)
+                else:
+                    st.metric("LogP", "N/A")
+            
+            with col4:
+                if mol:
+                    qed = round(QED.qed(mol), 3)
+                    qed_label = "Drug-like" if qed > 0.5 else "Low"
+                    st.metric("QED Score", f"{qed}", delta=qed_label)
+                else:
+                    st.metric("QED", "N/A")
+            
+            # Molecule image
+            if mol:
+                img = Draw.MolToImage(mol, size=(400, 250))
+                buffered = BytesIO()
+                img.save(buffered, format="PNG")
+                img_str = base64.b64encode(buffered.getvalue()).decode()
+                st.markdown(f'<img src="data:image/png;base64,{img_str}" width="50%">', unsafe_allow_html=True)
+            else:
+                st.write("⚠️ Invalid SMILES — could not render structure")
+            
+            st.text(f"SMILES: {smiles}")
             st.markdown("---")
