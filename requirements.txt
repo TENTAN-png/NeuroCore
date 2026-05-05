@@ -12,3 +12,4 @@ uvicorn
 pydantic
 numpy
 tqdm
+xgboost

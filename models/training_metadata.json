@@ -1,10 +1,11 @@
 {
-  "training_samples": 1339,
-  "feature_dim_fingerprint": 2048,
-  "feature_dim_descriptors": 8,
-  "pIC50_rmse": 0.96,
-  "pIC50_r2": 0.618,
-  "druglikeness_accuracy": 1.0,
+  "training_samples": 6575,
+  "feature_dim": 2060,
+  "feature_description": "2048-bit ECFP4 Morgan Fingerprint + 12 molecular descriptors",
+  "pIC50_rmse": 0.967,
+  "pIC50_r2": 0.638,
+  "pIC50_best_iteration": 256,
+  "druglikeness_accuracy": 0.997,
   "targets_used": [
     "EGFR",
     "ABL1",
@@ -13,7 +14,18 @@
     "JAK2",
     "ALK",
     "ERBB2",
-    "PI3KCA"
+    "PI3KCA",
+    "HDAC1",
+    "mTOR",
+    "Aurora-A",
+    "FGFR1",
+    "PLK1",
+    "BTK",
+    "PD-L1",
+    "IDH1"
   ],
-  "data_source": "ChEMBL (ebi.ac.uk/chembl)"
+  "num_targets": 16,
+  "data_source": "ChEMBL (ebi.ac.uk/chembl)",
+  "engine": "XGBoost 3.2.0 + CUDA (RTX 5050)",
+  "model_type": "xgboost_gpu"
 }
