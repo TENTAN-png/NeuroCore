@@ -1,0 +1,19 @@
+{
+  "training_samples": 1339,
+  "feature_dim_fingerprint": 2048,
+  "feature_dim_descriptors": 8,
+  "pIC50_rmse": 0.96,
+  "pIC50_r2": 0.618,
+  "druglikeness_accuracy": 1.0,
+  "targets_used": [
+    "EGFR",
+    "ABL1",
+    "VEGFR2",
+    "CDK2",
+    "JAK2",
+    "ALK",
+    "ERBB2",
+    "PI3KCA"
+  ],
+  "data_source": "ChEMBL (ebi.ac.uk/chembl)"
+}
