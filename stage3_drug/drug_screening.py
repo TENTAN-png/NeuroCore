@@ -7,13 +7,13 @@ import json
 import joblib
 import xgboost as xgb
 from rdkit import Chem
-from rdkit.Chem import Draw, Descriptors, QED, AllChem
+from rdkit.Chem import Draw, Descriptors, QED, AllChem, Lipinski, MolSurf, rdMolDescriptors
 import base64
 from io import BytesIO
 
 
-def smiles_to_features(smiles, n_bits=2048):
-    """Combined feature: Morgan FP (2048) + Molecular Descriptors (12) = 2060 dim."""
+def smiles_to_features(smiles, target_name, metadata=None, n_bits=2048):
+    """Combined feature: Morgan FP (2048) + Molecular Descriptors (20) + Target One-Hot (16) = 2084 dim."""
     mol = Chem.MolFromSmiles(smiles)
     if mol is None:
         return None
@@ -21,22 +21,42 @@ def smiles_to_features(smiles, n_bits=2048):
     fp = AllChem.GetMorganFingerprintAsBitVect(mol, radius=2, nBits=n_bits)
     fp_arr = np.array(fp, dtype=np.float32)
     
-    desc = np.array([
-        Descriptors.MolWt(mol),
-        Descriptors.MolLogP(mol),
-        Descriptors.NumHDonors(mol),
-        Descriptors.NumHAcceptors(mol),
-        Descriptors.TPSA(mol),
-        Descriptors.NumRotatableBonds(mol),
-        Descriptors.RingCount(mol),
-        Descriptors.FractionCSP3(mol),
-        Descriptors.NumAromaticRings(mol),
-        Descriptors.HeavyAtomCount(mol),
-        Descriptors.NumAliphaticRings(mol),
-        QED.qed(mol)
-    ], dtype=np.float32)
+    try:
+        desc = np.array([
+            Descriptors.MolWt(mol),
+            Descriptors.MolLogP(mol),
+            Descriptors.NumHDonors(mol),
+            Descriptors.NumHAcceptors(mol),
+            Descriptors.TPSA(mol),
+            Descriptors.NumRotatableBonds(mol),
+            Descriptors.RingCount(mol),
+            Descriptors.FractionCSP3(mol),
+            Descriptors.NumAromaticRings(mol),
+            Descriptors.HeavyAtomCount(mol),
+            Descriptors.NumAliphaticRings(mol),
+            QED.qed(mol),
+            Descriptors.NumHeteroatoms(mol),
+            Descriptors.NumValenceElectrons(mol),
+            Lipinski.NumAromaticHeterocycles(mol),
+            MolSurf.LabuteASA(mol),
+            Descriptors.BalabanJ(mol) if Descriptors.BalabanJ(mol) != 0 else 0,
+            rdMolDescriptors.CalcNumBridgeheadAtoms(mol),
+            Descriptors.MaxPartialCharge(mol) if not math.isnan(Descriptors.MaxPartialCharge(mol)) else 0,
+            Descriptors.MinPartialCharge(mol) if not math.isnan(Descriptors.MinPartialCharge(mol)) else 0,
+        ], dtype=np.float32)
+    except:
+        return None
+        
+    # One-hot encode the target protein
+    target_vec = np.zeros(16, dtype=np.float32)
+    if metadata and 'target_to_index' in metadata:
+        target_to_idx = metadata['target_to_index']
+        num_targets = metadata.get('num_targets', 16)
+        target_vec = np.zeros(num_targets, dtype=np.float32)
+        if target_name in target_to_idx:
+            target_vec[target_to_idx[target_name]] = 1.0
     
-    return np.concatenate([fp_arr, desc])
+    return np.concatenate([fp_arr, desc, target_vec])
 
 
 @st.cache_resource
@@ -147,7 +167,7 @@ def render_stage3(disease_data):
             if has_ml and mol:
                 st.markdown("##### 🤖 GPU-Trained XGBoost Predictions")
                 
-                feat = smiles_to_features(smiles)
+                feat = smiles_to_features(smiles, disease_data['mutated_gene'], meta)
                 
                 if feat is not None:
                     ml1, ml2, ml3, ml4 = st.columns(4)
